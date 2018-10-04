@@ -1,0 +1,11 @@
+.a-wide {
+	width: 100%;
+}
+
+.pos-rel {
+	position: relative;
+}
+
+.pos-fixed {
+	position: fixed;
+}

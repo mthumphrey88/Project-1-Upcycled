@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Upcycled</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <!-- Modal Structure -->
+    <div id="modal2" class="modal">
+
+        <div class="modal-content">
+            <h4>Create Listing</h4>
+            <form class="col s12">
+
+                <div class="input-field col s12">
+                    <input id="txt_title" name="postTitle" type="text" class="validate" required="" aria-required="true">
+                    <label for="txt_title">Title</label>
+                </div>
+                <div class="input-field col s12">
+                    <textarea id="txt_description" name="postDesc" class="materialize-textarea" required="" aria-required="true"></textarea>
+                    <label for="txt_description">Textarea</label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="dt_saleOn" name="postDate" type="text" class="datepicker" required="" aria-required="true">
+                    <label for="dt_saleOn">Sale date</label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="txt_address" type="text" name="postAddress" class="validate" required="" aria-required="true">
+                    <label for="txt_address">Address</label>
+                </div>
+                <div class="input-field col s12">
+                    <div class="col s2">
+                        <label for="rng_price">Max price</label>
+                    </div>
+                    <div class="col s2">
+                        <input id="rng_price" name="postPriceMax" type="range" min="0" max="100" class="validate">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button id="btn_submitPost" type="submit" class="modal-close waves-effect waves-green btn-flat">Submit</button> -->
+                    <a id="btn_submitPost" href="#!" class="modal-close waves-effect waves-green btn-flat">Submit</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m3 l2">
+            <div class="row pos-rel">
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="image/logo.jpg">
+                        </div>
+                        <div class="card-action div_login">
+                            <a id="linkLogin" class="waves-effect waves-light btn modal-trigger a-wide" href="#">Google</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 hide div_newPost">
+                    <div class="card">
+                        <div class="card-action">
+                            <div>
+                                <a class="waves-effect waves-light btn modal-trigger a-wide" href="#modal2">New post</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-action">
+                            <div>
+                                <input id="txt_zipCode" type="text" name="City/ZipCode" placeholder="City or Zip Code">
+                            </div>
+                        </div>
+                        <!-- <div class="card-action">
+                            <div>
+                                <input type="text" name="Date" placeholder="Date">
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col s12 m9 l10 google-map">
+            <div id="map" class="col s12" style="height:400px">
+                <!-- MAP CONTAINER and search function -->
+                <script>
+                    window.map = null;
+                    window.searchBox = null;
+
+                    function initAutocomplete() {
+                        window.map = new google.maps.Map(document.getElementById('map'), {
+                            center: { lat: 33.647, lng: -117.840 },
+                            zoom: 14,
+                            mapTypeId: 'roadmap'
+                        });
+
+                        // Create the search box and link it to the UI element.
+                        var input = document.getElementById('txt_zipCode');
+                        window.searchBox = new google.maps.places.SearchBox(input);
+                        // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+                        // Bias the SearchBox results towards current map's viewport.
+                        window.map.addListener('bounds_changed', function () {
+                            searchBox.setBounds(map.getBounds());
+                        });
+
+                        var markers = [];
+                        // Listen for the event fired when the user selects a prediction and retrieve
+                        // more details for that place.
+                        window.searchBox.addListener('places_changed', function () {
+                            var places = searchBox.getPlaces();
+
+                            if (places.length == 0) {
+                                return;
+                            }
+
+                            // Clear out the old markers.
+                            markers.forEach(function (marker) {
+                                marker.setMap(null);
+                            });
+                            markers = [];
+
+                            // For each place, get the icon, name and location.
+                            var bounds = new google.maps.LatLngBounds();
+                            places.forEach(function (place) {
+                                if (!place.geometry) {
+                                    console.log("Returned place contains no geometry");
+                                    return;
+                                }
+                                var icon = {
+                                    url: place.icon,
+                                    size: new google.maps.Size(71, 71),
+                                    origin: new google.maps.Point(0, 0),
+                                    anchor: new google.maps.Point(17, 34),
+                                    scaledSize: new google.maps.Size(25, 25)
+                                };
+
+                                // Create a marker for each place.
+                                markers.push(new google.maps.Marker({
+                                    map: map,
+                                    icon: icon,
+                                    title: place.name,
+                                    position: place.geometry.location
+                                }));
+
+                                if (place.geometry.viewport) {
+                                    // Only geocodes have viewport.
+                                    bounds.union(place.geometry.viewport);
+                                } else {
+                                    bounds.extend(place.geometry.location);
+                                }
+                            });
+                            window.map.fitBounds(bounds);
+                        });
+                    }
+                </script>
+                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqqbAs7Ka69UKEe77O4lniiufFHRidj10&libraries=places&callback=initAutocomplete"
+                    async defer></script>
+            </div>
+            <div>
+                <!-- TILE CONTAINER -->
+                <div id="div_tilesContainer" class="row ">
+                    
+                </div>
+                <!-- TILE-->
+            </div>
+        </div>
+    </div>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.4/dist/loadingoverlay.min.js"></script>
+    <script src="./js/materialize.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-auth.js"></script> -->
+    <!-- Custom Javascript -->
+    <script src="./js/credentials.js"></script>
+    <script src="./js/modal.js"></script>
+    <script src="./js/grid.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>
